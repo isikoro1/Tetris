@@ -4,12 +4,9 @@ using UnityEngine;
 
 public class Board : MonoBehaviour
 {
-    // やること
 
-    // 変数の作成//
+
     //ボード基盤用の四角枠格納用
-    //ボードの高さ
-    //ボードの幅
     //ボードの高さ調整用数値
 
     [SerializeField]
@@ -17,6 +14,8 @@ public class Board : MonoBehaviour
 
     [SerializeField]
     private int height = 30, width = 10, header = 8;
+
+
 
     private void Start()
     {
@@ -41,5 +40,31 @@ public class Board : MonoBehaviour
                 }
             }
         }
+    }
+
+
+    //ブロックが北内にあるのか判定する関数を呼ぶ関数
+    public bool CheckPosition(Block block)
+    {
+        foreach(Transform item in block.transform)
+        {
+            Vector2 pos = new Vector2(Mathf.Round(item.position.x), Mathf.Round(item.position.y));
+
+
+            if(!BoardOutCheck((int)pos.x, (int)pos.y))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    //枠内にあるのか判定する関数
+
+    bool BoardOutCheck(int x, int y)
+    {
+        //x軸は0以上width未満　y軸は0以上
+        return (x >= 0 && x < width && y >= 0);
     }
 }

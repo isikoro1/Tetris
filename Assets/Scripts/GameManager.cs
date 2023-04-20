@@ -4,25 +4,29 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    //変数の作成//
     
-
     Spawner spawner;//スポナー
     Block activeBlock;//生成されたブロック格納
 
-    //変数の作成//
-    //次にブロックが落ちるまでのインターバル時間
-    //次にブロックが落ちるまでの時間
-
     [SerializeField]
-    private float dropInterval = 0.25f;
-    float nextdropTimer;
+    private float dropInterval = 0.25f;//次にブロックが落ちるまでのインターバル時間
+    float nextdropTimer;//次にブロックが落ちるまでの時間
+
+    //変数の作成//
+    //ボードのスクリプトを格納
+    Board board;
+
+    
+
     
 
     private void Start()
     {
         //スポナーオブジェクトをスポナー変数に格納する
         spawner = GameObject.FindObjectOfType<Spawner>();
+
+        //ボードを変数に格納する
+        board = GameObject.FindObjectOfType<Board>();
 
         //スポナークラスからブロック生成関数を読んで変数に格納する
         if (!activeBlock)
@@ -45,7 +49,17 @@ public class GameManager : MonoBehaviour
             if (activeBlock)
             {
                 activeBlock.MoveDown();
+
+                //UpdateでBoardクラスの関数を呼び出してボードから出ていないか確認
+                if (!board.CheckPosition(activeBlock))
+                {
+                    activeBlock.MoveUp();
+
+                    activeBlock = spawner.SpawnBlock();
+                }
+
             }
+
         }
 
 
