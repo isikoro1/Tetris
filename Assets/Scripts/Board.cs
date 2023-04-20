@@ -5,17 +5,28 @@ using UnityEngine;
 public class Board : MonoBehaviour
 {
 
+    //2次元配列の作成//
+    private Transform[,] grid;
 
-    //ボード基盤用の四角枠格納用
-    //ボードの高さ調整用数値
+    
+    //関数の作成//
+
+    //CheckPositionに追記
+    //移動先にブロックが無いか判定する関数
+    //ブロックが落ちたポジションを記録する関数
+    
 
     [SerializeField]
     private Transform emptySprite;
 
     [SerializeField]
     private int height = 30, width = 10, header = 8;
+    //ボードの高さ調整用数値
 
-
+    private void Awake()
+    {
+        grid = new Transform[width, height];
+    }
 
     private void Start()
     {
@@ -43,18 +54,25 @@ public class Board : MonoBehaviour
     }
 
 
-    //ブロックが北内にあるのか判定する関数を呼ぶ関数
+    //ブロックが枠内にあるのか判定する関数を呼ぶ関数
     public bool CheckPosition(Block block)
     {
         foreach(Transform item in block.transform)
         {
-            Vector2 pos = new Vector2(Mathf.Round(item.position.x), Mathf.Round(item.position.y));
+            Vector2 pos = Rounding.Round(item.position);
 
 
             if(!BoardOutCheck((int)pos.x, (int)pos.y))
             {
                 return false;
             }
+
+            if (BlockCheck((int)pos.x, (int)pos.y,block))
+            {
+                return false;
+            }
+
+            
         }
 
         return true;
@@ -67,4 +85,25 @@ public class Board : MonoBehaviour
         //x軸は0以上width未満　y軸は0以上
         return (x >= 0 && x < width && y >= 0);
     }
+
+    //移動先にブロックがないか判定する関数
+    bool BlockCheck(int x, int y, Block block)
+    {
+
+        //二次元配列が空ではないのは他のブロックがある時
+        //親が違うのは他のブロックがある時
+        return (grid[x, y] != null && grid[x, y].parent != block.transform);
+    }
+
+    //ブロックが落ちたポジションを記録する関数
+    public void SaveBlockInGrid(Block block)
+    {
+        foreach (Transform item in block.transform)
+        {
+            Vector2 pos = Rounding.Round(item.position);
+
+            grid[(int)pos.x, (int)pos.y] = item;
+        }
+    }
+
 }

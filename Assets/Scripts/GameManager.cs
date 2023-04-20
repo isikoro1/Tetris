@@ -12,13 +12,15 @@ public class GameManager : MonoBehaviour
     private float dropInterval = 0.25f;//次にブロックが落ちるまでのインターバル時間
     float nextdropTimer;//次にブロックが落ちるまでの時間
 
-    //変数の作成//
     //ボードのスクリプトを格納
     Board board;
 
-    
+    //入力受付タイマー(3種類)
+    float nextKeyDownTimer, nextKeyLeftRightTimer, nextKeyRotateTimer;
 
-    
+    //入力インターバル（３種類）
+    [SerializeField]
+    private float nextKeyDownInterval, nextKeyLeftRightInterval, nextKeyRotateInterval;
 
     private void Start()
     {
@@ -28,12 +30,18 @@ public class GameManager : MonoBehaviour
         //ボードを変数に格納する
         board = GameObject.FindObjectOfType<Board>();
 
+        spawner.transform.position = Rounding.Round(spawner.transform.position);
+
+        //タイマーの初期設定
+        nextKeyDownTimer = Time.time + nextKeyDownInterval;
+        nextKeyLeftRightTimer = Time.time + nextKeyLeftRightInterval;
+        nextKeyRotateTimer = Time.time + nextKeyRotateInterval;
+
         //スポナークラスからブロック生成関数を読んで変数に格納する
         if (!activeBlock)
         {
             activeBlock = spawner.SpawnBlock();
         }
-
 
     }
 
@@ -55,18 +63,46 @@ public class GameManager : MonoBehaviour
                 {
                     activeBlock.MoveUp();
 
+                    board.SaveBlockInGrid(activeBlock);
+
                     activeBlock = spawner.SpawnBlock();
                 }
 
             }
 
         }
-
-
-
-
-        
+    
     }
 
+    //関数の作成//
 
+    //キーの入力を検知してブロックを動かす関数
+
+    //ボードの底についた時に次のブロックを生成する関数
+    void PlayerInput()
+    {
+        if (Input.GetKey(KeyCode.D) && (Time.time > nextKeyLeftRightTimer) || Input.GetKeyDown(KeyCode.D))
+        {
+            activeBlock.MoveRight();
+
+            nextKeyLeftRightTimer = Time.time + nextKeyLeftRightInterval;
+
+            if (!board.CheckPosition(activeBlock))
+            {
+                activeBlock.MoveLeft();
+            }
+        }
+        else if(Input.GetKey(KeyCode.A) && (Time.time > nextKeyLeftRightTimer) || Input.GetKeyDown(KeyCode.A))
+        {
+            activeBlock.MoveLeft();
+
+            nextKeyLeftRightTimer = Time.time + nextKeyLeftRightInterval;
+
+            if (!board.CheckPosition(activeBlock))
+            {
+                activeBlock.MoveRight();
+            }
+        }//途中まで
+        //回転
+    }
 }
