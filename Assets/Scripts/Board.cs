@@ -7,13 +7,6 @@ public class Board : MonoBehaviour
 
     //2次元配列の作成//
     private Transform[,] grid;
-
-    
-    //関数の作成//
-
-    //CheckPositionに追記
-    //移動先にブロックが無いか判定する関数
-    //ブロックが落ちたポジションを記録する関数
     
 
     [SerializeField]
@@ -106,4 +99,61 @@ public class Board : MonoBehaviour
         }
     }
 
+
+    //全ての行をチェックして、埋まっていれば削除する関数
+    public void ClearAllRows()
+    {
+        for (int y = 0; y < height; y++)
+        {
+            if (IsComplete(y))
+            {
+                ClearRow(y);
+
+                ShiftRowsDown(y + 1);　　
+            }
+        }
+    }
+
+    //全ての行をチェックする関数
+    bool IsComplete(int y)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (grid[x, y] == null)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+    //削除する関数
+    void ClearRow(int y)
+    {
+        for (int x = 0; x < width; x++)
+        {
+            if (grid[x, y] != null)
+            {
+                Destroy(grid[x, y].gameObject);
+            }
+            grid[x, y] = null;
+        }   
+    }
+
+    //上にあるブロックを1段階下げる関数
+    void ShiftRowsDown(int startY)
+    {
+        for (int y = startY; y < height; y++)
+        {
+            for (int x = 0; x < width; x++)
+            {
+                if (grid[x,y] != null)
+                {
+                    grid[x, y - 1] = grid[x, y];
+                    grid[x, y] = null;
+                    grid[x, y - 1].position += new Vector3(0, -1, 0);
+                }
+            }
+        }
+    }
 }

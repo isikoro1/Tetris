@@ -47,30 +47,7 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        //Updateで時間の判定をして判定次第で落下関数を呼ぶ
-
-        if (Time.time > nextdropTimer)
-        {
-            nextdropTimer = Time.time + dropInterval;
-
-
-            if (activeBlock)
-            {
-                activeBlock.MoveDown();
-
-                //UpdateでBoardクラスの関数を呼び出してボードから出ていないか確認
-                if (!board.CheckPosition(activeBlock))
-                {
-                    activeBlock.MoveUp();
-
-                    board.SaveBlockInGrid(activeBlock);
-
-                    activeBlock = spawner.SpawnBlock();
-                }
-
-            }
-
-        }
+        PlayerInput();
     
     }
 
@@ -102,7 +79,47 @@ public class GameManager : MonoBehaviour
             {
                 activeBlock.MoveRight();
             }
-        }//途中まで
-        //回転
+        }
+        else if (Input.GetKey(KeyCode.E) && (Time.time > nextKeyRotateTimer))
+        {
+            activeBlock.RotateRight();
+            nextKeyRotateTimer = Time.time + nextKeyRotateInterval;
+
+            if (!board.CheckPosition(activeBlock))
+            {
+                activeBlock.RotateLeft();
+            }
+
+
+        }
+        else if (Input.GetKey(KeyCode.S) && (Time.time > nextKeyDownTimer) || (Time.time > nextdropTimer))
+        {
+            activeBlock.MoveDown();
+
+            nextKeyDownTimer = Time.time + nextKeyDownInterval;
+            nextdropTimer = Time.time + dropInterval;
+
+            if (!board.CheckPosition(activeBlock))
+            {
+                //底についた時の処理
+                BottomBoard();
+            }
+        }
     }
+
+    void BottomBoard()
+    {
+        activeBlock.MoveUp();
+        board.SaveBlockInGrid(activeBlock);
+
+        activeBlock = spawner.SpawnBlock();
+
+        nextKeyDownTimer = Time.time;
+        nextKeyLeftRightTimer = Time.time;
+        nextKeyRotateTimer = Time.time;
+
+        board.ClearAllRows();//埋まっていれば削除する
+
+    }
+
 }

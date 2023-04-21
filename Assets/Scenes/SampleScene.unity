@@ -286,6 +286,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ea71b8b1f3d5f45f197558a4c834426d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dropInterval: 0.25
+  nextKeyDownInterval: 0.02
+  nextKeyLeftRightInterval: 0.25
+  nextKeyRotateInterval: 0.25
 --- !u!4 &1560188384
 Transform:
   m_ObjectHideFlags: 0
